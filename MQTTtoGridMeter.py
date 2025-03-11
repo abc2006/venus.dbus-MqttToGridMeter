@@ -97,6 +97,8 @@ def on_connect(client, userdata, flags, rc):
             print("Connected to MQTT Broker!")
             verbunden = 1
             client.subscribe(Zaehlersensorpfad)
+            print("connected to Zaehlersensorpfad", rc)
+
         else:
             print("Failed to connect, return code %d\n", rc)
 

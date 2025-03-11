@@ -42,21 +42,6 @@ Zaehlersensorpfad = "counter/victron"
 
 # Variblen setzen
 verbunden = 0
-# Globale Variablen deklarieren
-global total_power_L1
-global total_power_L2 
-global total_power_L3
-global total_power
-global total_voltage_L1
-global total_voltage_L2
-global total_voltage_L3
-global total_current_L1
-global total_current_L2
-global total_current_L3
-global total_energy_feed
-global total_energy_need
-
-# Globale Variablen initialisieren
 total_power_L1 = 0
 total_power_L2 = 0
 total_power_L3 = 0
@@ -95,9 +80,21 @@ def on_connect(client, userdata, flags, rc):
         global verbunden
         if rc == 0:
             print("Connected to MQTT Broker!")
-            verbunden = 1
-            client.subscribe(Zaehlersensorpfad)
-            print("connected to Zaehlersensorpfad", rc)
+            verbunden = 1   
+        client.subscribe("counter/victron/total_power_L1")
+        client.subscribe("counter/victron/total_power_L2")
+        client.subscribe("counter/victron/total_power_L3")
+        client.subscribe("counter/victron/total_power")
+        client.subscribe("counter/victron/total_voltage_L1")
+        client.subscribe("counter/victron/total_voltage_L2")
+        client.subscribe("counter/victron/total_voltage_L3")
+        client.subscribe("counter/victron/total_current_L1")
+        client.subscribe("counter/victron/total_current_L2")
+        client.subscribe("counter/victron/total_current_L3")
+        client.subscribe("counter/victron/total_energy_feed")
+        client.subscribe("counter/victron/total_energy_need")
+
+print("connected to Zaehlersensorpfad", rc)
 
         else:
             print("Failed to connect, return code %d\n", rc)
@@ -105,6 +102,19 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     try:
+        global total_power_L1
+        global total_power_L2 
+        global total_power_L3
+        global total_power
+        global total_voltage_L1
+        global total_voltage_L2
+        global total_voltage_L3
+        global total_current_L1
+        global total_current_L2
+        global total_current_L3
+        global total_energy_feed
+        global total_energy_need
+
         if msg.topic == "counter/victron/total_power":
             total_power = float(msg.payload)
         elif msg.topic == "counter/victron/total_power_L1":
@@ -174,8 +184,8 @@ class DbusDummyService:
     self._dbusservice['/Ac/L1/Voltage'] = round(total_voltage_L1 ,2)
     self._dbusservice['/Ac/L2/Voltage'] = round(total_voltage_L2 ,2)
     self._dbusservice['/Ac/L3/Voltage'] = round(total_voltage_L3 ,2)
-    self._dbusservice['/Ac/L1/Current'] = round(total_current_L3 ,2)
-    self._dbusservice['/Ac/L2/Current'] = round(total_current_L3 ,2)
+    self._dbusservice['/Ac/L1/Current'] = round(total_current_L1 ,2)
+    self._dbusservice['/Ac/L2/Current'] = round(total_current_L2 ,2)
     self._dbusservice['/Ac/L3/Current'] = round(total_current_L3 ,2)
     self._dbusservice['/Ac/L1/Power'] = round(total_power_L1, 2)
     self._dbusservice['/Ac/L2/Power'] = round(total_power_L2, 2)

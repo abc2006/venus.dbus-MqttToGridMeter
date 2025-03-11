@@ -127,9 +127,9 @@ def on_message(client, userdata, msg):
             print("Unbekanntes Topic: " + msg.topic)
 
     except Exception as e:
-       logging.exception("Programm MQTTtoMeter ist abgestuerzt. (on message Funkion)")
-       print(e)
-       print("Im MQTTtoMeter Programm ist etwas beim auslesen der Nachrichten schief gegangen")
+        logging.exception("Programm MQTTtoMeter ist abgestuerzt. (on message Funkion)")
+        print(e)
+        print("Im MQTTtoMeter Programm ist etwas beim auslesen der Nachrichten schief gegangen")
 
 
 

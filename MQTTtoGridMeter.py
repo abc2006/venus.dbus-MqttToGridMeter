@@ -42,23 +42,18 @@ Zaehlersensorpfad = "counter/victron"
 
 # Variblen setzen
 verbunden = 0
-durchlauf = 0
-maxcellvoltage = 3.0
-powercurr = 0
-totalin = 0
-totalout = 0
-total_power_L1 = 0
-total_power_L2 = 0
-total_power_L3 = 0
-total_power = 0
-total_voltage_L1 = 0
-total_voltage_L2 = 0
-total_voltage_L3 = 0
-total_current_L1 = 0
-total_current_L2 = 0
-total_current_L3 = 0
-total_energy_feed = 0
-total_energy_need = 0
+global total_power_L1 = 0
+global total_power_L2 = 0
+global total_power_L3 = 0
+global total_power = 0
+global total_voltage_L1 = 0
+global total_voltage_L2 = 0
+global total_voltage_L3 = 0
+global total_current_L1 = 0
+global total_current_L2 = 0
+global total_current_L3 = 0
+global total_energy_feed = 0
+global total_energy_need = 0
 
 # MQTT Abfragen:
 
@@ -93,36 +88,30 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     try:
-        global powercurr, totalin, totalout
-        global voltage_L1, voltage_L2, voltage_L3
-        global current_L1, current_L2, current_L3
-        global power_L1, power_L2, power_L3
-        global energy_feed, energy_need
-
         if msg.topic == "counter/victron/total_power":
-            powercurr = float(msg.payload)
+            total_power = float(msg.payload)
         elif msg.topic == "counter/victron/total_power_L1":
-            power_L1 = float(msg.payload)
+            total_power_L1 = float(msg.payload)
         elif msg.topic == "counter/victron/total_power_L2":
-            power_L2 = float(msg.payload)
+            total_power_L2 = float(msg.payload)
         elif msg.topic == "counter/victron/total_power_L3":
-            power_L3 = float(msg.payload)
+            total_power_L3 = float(msg.payload)
         elif msg.topic == "counter/victron/total_voltage_L1":
-            voltage_L1 = float(msg.payload)
+            total_voltage_L1 = float(msg.payload)
         elif msg.topic == "counter/victron/total_voltage_L2":
-            voltage_L2 = float(msg.payload)
+            total_voltage_L2 = float(msg.payload)
         elif msg.topic == "counter/victron/total_voltage_L3":
-            voltage_L3 = float(msg.payload)
+            total_voltage_L3 = float(msg.payload)
         elif msg.topic == "counter/victron/total_current_L1":
-            current_L1 = float(msg.payload)
+            total_current_L1 = float(msg.payload)
         elif msg.topic == "counter/victron/total_current_L2":
-            current_L2 = float(msg.payload)
+            total_current_L2 = float(msg.payload)
         elif msg.topic == "counter/victron/total_current_L3":
-            current_L3 = float(msg.payload)
+            total_current_L3 = float(msg.payload)
         elif msg.topic == "counter/victron/total_energy_feed":
-            energy_feed = float(msg.payload)
+            total_energy_feed = float(msg.payload)
         elif msg.topic == "counter/victron/total_energy_need":
-            energy_need = float(msg.payload)
+            total_energy_need = float(msg.payload)
         else:
             print("Unbekanntes Topic: " + msg.topic)
 
@@ -164,20 +153,20 @@ class DbusDummyService:
   
   
   def _update(self):
-    self._dbusservice['/Ac/Power'] =  powercurr # positive: consumption, negative: feed into grid
-    self._dbusservice['/Ac/L1/Voltage'] = 230
-    self._dbusservice['/Ac/L2/Voltage'] = 230
-    self._dbusservice['/Ac/L3/Voltage'] = 230
-    self._dbusservice['/Ac/L1/Current'] = round(powercurr/3 / 230 ,2)
-    self._dbusservice['/Ac/L2/Current'] = round(powercurr/3 / 230 ,2)
-    self._dbusservice['/Ac/L3/Current'] = round(powercurr/3 / 230 ,2)
-    self._dbusservice['/Ac/L1/Power'] = round(powercurr/3, 2)
-    self._dbusservice['/Ac/L2/Power'] = round(powercurr/3, 2)
-    self._dbusservice['/Ac/L3/Power'] = round(powercurr/3, 2)
+    self._dbusservice['/Ac/Power'] =  total_power # positive: consumption, negative: feed into grid
+    self._dbusservice['/Ac/L1/Voltage'] = round(total_voltage_L1 ,2)
+    self._dbusservice['/Ac/L2/Voltage'] = round(total_voltage_L2 ,2)
+    self._dbusservice['/Ac/L3/Voltage'] = round(total_voltage_L3 ,2)
+    self._dbusservice['/Ac/L1/Current'] = round(total_current_L3 ,2)
+    self._dbusservice['/Ac/L2/Current'] = round(total_current_L3 ,2)
+    self._dbusservice['/Ac/L3/Current'] = round(total_current_L3 ,2)
+    self._dbusservice['/Ac/L1/Power'] = round(total_power_L1, 2)
+    self._dbusservice['/Ac/L2/Power'] = round(total_power_L2, 2)
+    self._dbusservice['/Ac/L3/Power'] = round(total_power_L3, 2)
 
-    self._dbusservice['/Ac/Energy/Forward'] = totalin
-    self._dbusservice['/Ac/Energy/Reverse'] = totalout
-    logging.info("House Consumption: {:.0f}".format(powercurr))
+    self._dbusservice['/Ac/Energy/Forward'] = total_energy_need
+    self._dbusservice['/Ac/Energy/Reverse'] = total_energy_feed
+    logging.info("House Consumption: {:.0f}".format(total_power))
     # increment UpdateIndex - to show that new data is available
     index = self._dbusservice[path_UpdateIndex] + 1  # increment index
     if index > 255:   # maximum value of the index

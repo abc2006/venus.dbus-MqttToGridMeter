@@ -35,9 +35,10 @@ from vedbus import VeDbusService
 path_UpdateIndex = '/UpdateIndex'
 
 # MQTT Setup
-broker_address = "IPADRESS"
+broker_address = "mosquitto.allesina"
 MQTTNAME = "MQTTtoMeter"
-Zaehlersensorpfad = "Path"
+Zaehlersensorpfad = "counter/victron"
+
 
 # Variblen setzen
 verbunden = 0
@@ -46,7 +47,18 @@ maxcellvoltage = 3.0
 powercurr = 0
 totalin = 0
 totalout = 0
-
+total_power_L1 = 0
+total_power_L2 = 0
+total_power_L3 = 0
+total_power = 0
+total_voltage_L1 = 0
+total_voltage_L2 = 0
+total_voltage_L3 = 0
+total_current_L1 = 0
+total_current_L2 = 0
+total_current_L3 = 0
+total_energy_feed = 0
+total_energy_need = 0
 
 # MQTT Abfragen:
 
@@ -81,18 +93,40 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     try:
-
         global powercurr, totalin, totalout
-        if msg.topic == Zaehlersensorpfad:   # JSON String vom Zaehler Sensor auslesen
-            if msg.payload != '{"value": null}' and msg.payload != b'{"value": null}':
-                jsonpayload = json.loads(msg.payload)
-                powercurr = float(jsonpayload["Zaehler"]["Power_curr"])
-                totalin = float(jsonpayload["Zaehler"]["Total_in"])
-                totalout = float(jsonpayload["Zaehler"]["Total_out"])
-            else:
-                print("Antwort vom MQTT war Null und wurde ignoriert")
+        global voltage_L1, voltage_L2, voltage_L3
+        global current_L1, current_L2, current_L3
+        global power_L1, power_L2, power_L3
+        global energy_feed, energy_need
 
-    except Exception as e:
+        if msg.topic == "counter/victron/total_power":
+            powercurr = float(msg.payload)
+        elif msg.topic == "counter/victron/total_power_L1":
+            power_L1 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_power_L2":
+            power_L2 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_power_L3":
+            power_L3 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_voltage_L1":
+            voltage_L1 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_voltage_L2":
+            voltage_L2 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_voltage_L3":
+            voltage_L3 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_current_L1":
+            current_L1 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_current_L2":
+            current_L2 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_current_L3":
+            current_L3 = float(msg.payload)
+        elif msg.topic == "counter/victron/total_energy_feed":
+            energy_feed = float(msg.payload)
+        elif msg.topic == "counter/victron/total_energy_need":
+            energy_need = float(msg.payload)
+        else:
+            print("Unbekanntes Topic: " + msg.topic)
+
+     except Exception as e:
         logging.exception("Programm MQTTtoMeter ist abgestuerzt. (on message Funkion)")
         print(e)
         print("Im MQTTtoMeter Programm ist etwas beim auslesen der Nachrichten schief gegangen")

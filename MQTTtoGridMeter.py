@@ -42,18 +42,33 @@ Zaehlersensorpfad = "counter/victron"
 
 # Variblen setzen
 verbunden = 0
-global total_power_L1 = 0
-global total_power_L2 = 0
-global total_power_L3 = 0
-global total_power = 0
-global total_voltage_L1 = 0
-global total_voltage_L2 = 0
-global total_voltage_L3 = 0
-global total_current_L1 = 0
-global total_current_L2 = 0
-global total_current_L3 = 0
-global total_energy_feed = 0
-global total_energy_need = 0
+# Globale Variablen deklarieren
+global total_power_L1
+global total_power_L2 
+global total_power_L3
+global total_power
+global total_voltage_L1
+global total_voltage_L2
+global total_voltage_L3
+global total_current_L1
+global total_current_L2
+global total_current_L3
+global total_energy_feed
+global total_energy_need
+
+# Globale Variablen initialisieren
+total_power_L1 = 0
+total_power_L2 = 0
+total_power_L3 = 0
+total_power = 0
+total_voltage_L1 = 0
+total_voltage_L2 = 0
+total_voltage_L3 = 0
+total_current_L1 = 0
+total_current_L2 = 0
+total_current_L3 = 0
+total_energy_feed = 0
+total_energy_need = 0
 
 # MQTT Abfragen:
 
